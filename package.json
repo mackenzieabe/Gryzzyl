@@ -1,0 +1,24 @@
+{
+  "name": "gryzzyl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mackenzieabe/Gryzzyl.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mackenzieabe/Gryzzyl/issues"
+  },
+  "homepage": "https://github.com/mackenzieabe/Gryzzyl#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "inquirer": "^8.2.4",
+    "mongoose": "^6.5.3"
+  }
+}
