@@ -51,4 +51,4 @@ ThoughtsSchema.virtual('reactionCount').get(function () {
     return this.reaction.length
 });
 
-module.exports = Library;
+module.exports = Thoughts;
