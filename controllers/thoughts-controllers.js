@@ -22,7 +22,29 @@ const thoughtsController = {
             .catch((err) => res.status(500).json(err));
 
     },
-    //POST to create a new thought (don't forget to push the created thought's _id to the associated user's thoughts array field)
+
+    addReaction({ params, body }, res) {
+        Thoughts.findOneAndUpdate(
+            { _id: params.thoughtsId },
+            { $push: { reaction: body } },
+            { new: true, runValidators: true }
+        )
+            .then(dbThoughtsData => {
+                if (!dbThoughtsData) {
+                    res.status(404).json({ message: 'No thought found with this id!' });
+                    return;
+                }
+                res.json(dbThoughtsData);
+            })
+            .catch(err => res.json(err));
+    },
+
+    createThought({ body }, res) {
+        Thoughts.create(body)
+            .then(dbThoughtsData => res.json(dbThoughtsData))
+            .catch(err => res.json(err))
+    },
+    //not sure about this----(don't forget to push the created thought's _id to the associated user's thoughts array field)
 
 
     updateThought({ params, body }, res) {
@@ -51,5 +73,15 @@ const thoughtsController = {
 
             .then(() => res.json({ message: 'Thought deleted!' }))
             .catch((err) => res.status(500).json(err));
+    },
+
+    removeReaction({ params }, res) {
+        Thoughts.findOneAndDelete(
+            {_id: params.thoughtsId },
+            { $pull: {replies: {replyId: params.replyId }}},
+            { new: true }
+        )
+        .then(dbThoughtsData => res.json(dbThoughtsData))
+        .catch (err => res.json(err));
     }
 };

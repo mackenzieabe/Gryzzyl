@@ -1,5 +1,4 @@
-
-
+const { Schema, model } = require('mongoose');
 
 var validateEmail = function (email) {
     var re = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
@@ -24,18 +23,19 @@ const UserSchema = new Schema({
         [{ type: Schema.Types.ObjectId, ref: 'thoughts' }],
 
     friends:
-        [Friends],
+        [{ type: Schema.Types.ObjectId, ref: 'user' }],
 },
-     {
+    {
         toJSON: {
             virtuals: true
         },
     }
-      
+
 );
 
 UserSchema.virtual('friendCount').get(function () {
     return this.friend.length
 });
 
+const User = model(User, UserSchema);
 module.exports = User;

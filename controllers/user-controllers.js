@@ -27,53 +27,62 @@ const userController = {
             .then((user) => res.json(user))
             .catch((err) => res.status(500).json(err));
     },
-    //update user by ID
-    updateUser({ params, body }, res) {
-        User.findOneAndUpdate(
-            { _id: params.id },
-            { $set: req.body },
-            { new: true, runValidators: true })
-            .then((user) =>
-            !user
-              ? res.status(404).json({ message: 'No user with this id!' })
-              : res.json(user)
-          )
-          .catch((err) => {
-            console.log(err);
-            res.status(500).json(err);
-          });
-    },
-
-    //delete user by removing it's ID
-    deleteUser(req, res) { //why is 'body' not included in these params?
-        User.findOneAndDelete({ _id: req.params.userId })
-            .then((user) =>
-                !user
-                    ? res.status(400).json({ message: 'No user found with this ID!' })
-                    : User.deleteMany({ _id: { $in: user } })
-            )
-
-            .then(() => res.json({ message: 'User deleted!' }))
-            .catch((err) => res.status(500).json(err));
-
-    },
-
-    //not sure how to do this part:
-    //POST to add a new friend to a user's friend list
-    //DELETE to remove a friend from a user's friend list
     addFriend({ params, body }, res) {
         User.findOneAndUpdate(
             { _id: params.userId },
-            { $push: { friends: body } },//will this post a new friend to a user's friend list?
+            { $push: { friend: body } },
             { new: true, runValidators: true }
         )
-            .then((User) =>
-                !user
-                    ? res.status(404).json({ message: 'No user with this ID!' })
-                    : res.json(user)
-            )
-            .catch((err) => res.status(500).json(err));
-    }
+            .then(dbUserData => {
+                if (!dbUserData) {
+                    res.status(404).json({ message: 'No user found with this id!' });
+                    return;
+                }
+                res.json(dbUserData);
+            })
+            .catch(err => res.json(err));
+    },
+
+//update user by ID
+updateUser({ params, body }, res) {
+    User.findOneAndUpdate(
+        { _id: params.id },
+        { $set: req.body },
+        { new: true, runValidators: true })
+        .then((user) =>
+            !user
+                ? res.status(404).json({ message: 'No user with this id!' })
+                : res.json(user)
+        )
+        .catch((err) => {
+            console.log(err);
+            res.status(500).json(err);
+        });
+},
+//delete user by removing it's ID
+deleteUser(req, res) { //why is 'body' not included in these params?
+    User.findOneAndDelete({ _id: req.params.userId })
+        .then((user) =>
+            !user
+                ? res.status(400).json({ message: 'No user found with this ID!' })
+                : User.deleteMany({ _id: { $in: user } })
+        )
+
+        .then(() => res.json({ message: 'User deleted!' }))
+        .catch((err) => res.status(500).json(err));
+
+},
+
+  // remove friend from user's friend list
+  removeFriend({ params }, res) {
+    User.findOneAndDelete(
+      { _id: params.userId },
+      { $pull: { friend: { friendId: params.friendId } } },
+      { new: true }
+    )
+      .then(dbUserData => res.json(dbUserData))
+      .catch(err => res.json(err));
+  }
 }
 
 module.exports = userController;

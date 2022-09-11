@@ -6,3 +6,5 @@ const {
     createThought
 } = require('../../controllers/thoughts-controllers') 
 
+module.exports = router;
+
