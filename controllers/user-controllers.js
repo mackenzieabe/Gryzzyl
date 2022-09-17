@@ -1,6 +1,6 @@
-const { triggerAsyncId } = require('async_hooks');
-const { json } = require('body-parser');
-const { application } = require('express');
+// const { triggerAsyncId } = require('async_hooks');
+// const { json } = require('body-parser');
+// const { application } = require('express');
 const { Thoughts, User } = require('../models');
 
 //get (find) all users
@@ -22,10 +22,10 @@ const userController = {
             .catch((err) => res.status(500).json(err));
     },
     //create a new User// does this qualify as posting??
-    createUser(req, res) {
-        User.create(req.body)
-            .then((user) => res.json(user))
-            .catch((err) => res.status(500).json(err));
+    createUser({body}, res) {
+        User.create(body)
+           .then((user) => res.json(user))
+          .catch((err) => res.status(500).json(err));
     },
     addFriend({ params, body }, res) {
         User.findOneAndUpdate(

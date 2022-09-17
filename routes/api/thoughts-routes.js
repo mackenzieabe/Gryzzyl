@@ -6,5 +6,9 @@ const {
     createThought
 } = require('../../controllers/thoughts-controllers') 
 
+router.route('/').get(getThoughts).post(createThought)
+
+router.route('/:id').get(getSingleThought)
+
 module.exports = router;
 

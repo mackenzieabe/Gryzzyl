@@ -85,3 +85,5 @@ const thoughtsController = {
         .catch (err => res.json(err));
     }
 };
+
+module.exports= thoughtsController;
