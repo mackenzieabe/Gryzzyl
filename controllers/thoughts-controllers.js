@@ -94,15 +94,21 @@ deleteThoughts({ params }, res) {
       })
       .catch(err => res.status(400).json(err));
   },
-removeReaction({ params }, res) {
-    Thoughts.findOneAndDelete(
-        { _id: params.thoughtsId },
-        { $pull: { reaction: { reactionId: params.reactionId } } },
-        { new: true }
+  deleteReaction({ params }, res) {
+    Thoughts.findOneAndUpdate(
+      { _id: params.thoughtsId },
+      { $pull: { reaction: { reactionId: params.reactionId } } },
+      { new: true }
     )
-        .then(dbThoughtsData => res.json(dbThoughtsData))
-        .catch(err => res.json(err));
-}
+      .then(dbThoughtsData => {
+        if (!dbThoughtsData) {
+          res.status(404).json({ message: 'Nope!'});
+          return;
+        }
+       res.json(dbThoughtsData);
+      })
+      .catch(err => res.json(err));
+  }
 };
 
 module.exports = thoughtsController;
