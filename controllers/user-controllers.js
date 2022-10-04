@@ -11,26 +11,37 @@ const userController = {
             .catch((err) => res.status(500).json(err));
     },
     // get single user by ID
-    getSingleUser(req, res) {
-        User.findOne({ _id: req.params.userId })
-            .select('-_v')
+    getUserById({ params }, res) {
+        User.findOne({ _id: params.id })
+        .populate({
+            path: 'thoughts',
+            select: '-_v'
+        })
+        .populate({
+            path: 'friends',
+            select: '-_v'
+        })
             .then((user) =>
                 !user
-                    ? res.status(404).json({ message: 'No user with that ID!' })
+                    ? res.status(404).json({ message: 'No user found with that ID!' })
                     : res.json(user)
             )
             .catch((err) => res.status(500).json(err));
     },
-    //create a new User// does this qualify as posting??
-    createUser({body}, res) {
+    //POST new user
+    createUser({ body }, res) {
         User.create(body)
-           .then((user) => res.json(user))
-          .catch((err) => res.status(500).json(err));
+            .then((user) => res.json(user))
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err)
+            });
     },
-    addFriend({ params, body }, res) {
+
+    addFriend({params}, res) {
         User.findOneAndUpdate(
             { _id: params.userId },
-            { $push: { friend: body } },
+            { $addToSet: { friends: req.params.friendId } },
             { new: true, runValidators: true }
         )
             .then(dbUserData => {
@@ -43,46 +54,48 @@ const userController = {
             .catch(err => res.json(err));
     },
 
-//update user by ID
-updateUser({ params, body }, res) {
-    User.findOneAndUpdate(
-        { _id: params.id },
-        { $set: req.body },
-        { new: true, runValidators: true })
-        .then((user) =>
-            !user
-                ? res.status(404).json({ message: 'No user with this id!' })
-                : res.json(user)
+    //update user by ID
+    updateUser({ params, body }, res) {
+        User.findOneAndUpdate(
+            { _id: params.id },
+            body,
+            { new: true, runValidators: true })
+            .then((user) =>
+                !user
+                    ? res.status(404).json({ message: 'No user found with this id!' })
+                    : res.json(user)
+            )
+            .catch((err) => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    },
+
+    
+    deleteUser({ params }, res) {
+        User.findOneAndDelete({ _id: params.id })
+          .then(dbUserData => {
+            if (!dbUserData) {
+              res.status(404).json({ message: 'No user found with this id!' });
+              return;
+            }
+            res.json(dbUserData);
+          })
+          .catch(err => res.status(400).json(err));
+      },
+    
+
+
+    // remove friend from user's friend list
+    removeFriend({ params }, res) {
+        User.findOneAndDelete(
+            { _id: params.userId },
+            { $pull: { friend: { friendId: params.friendId } } },
+            { new: true }
         )
-        .catch((err) => {
-            console.log(err);
-            res.status(500).json(err);
-        });
-},
-//delete user by removing it's ID
-deleteUser(req, res) { //why is 'body' not included in these params?
-    User.findOneAndDelete({ _id: req.params.userId })
-        .then((user) =>
-            !user
-                ? res.status(400).json({ message: 'No user found with this ID!' })
-                : User.deleteMany({ _id: { $in: user } })
-        )
-
-        .then(() => res.json({ message: 'User deleted!' }))
-        .catch((err) => res.status(500).json(err));
-
-},
-
-  // remove friend from user's friend list
-  removeFriend({ params }, res) {
-    User.findOneAndDelete(
-      { _id: params.userId },
-      { $pull: { friend: { friendId: params.friendId } } },
-      { new: true }
-    )
-      .then(dbUserData => res.json(dbUserData))
-      .catch(err => res.json(err));
-  }
+            .then(dbUserData => res.json(dbUserData))
+            .catch(err => res.json(err));
+    }
 }
 
 module.exports = userController;
