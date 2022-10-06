@@ -7,6 +7,9 @@ Finally, another social media platform! Here at Gryzzyl we have been leading the
 ## Technologies Used
 Html, Node.js, Mongoose, Express
 
+## Screencastify Video
+https://drive.google.com/file/d/1oc2aTw-GapjyI2EmTi7bgYoLrqRSoEc3/view
+
 ![Screenshot (108)](https://user-images.githubusercontent.com/102620275/194408643-78cbe76c-a0f1-4b27-93de-26a9c8a6943a.png)
 ![Screenshot (109)](https://user-images.githubusercontent.com/102620275/194408676-5a9f50a7-6027-4811-8892-a1e60aae3dbe.png)
 ![Screenshot (110)](https://user-images.githubusercontent.com/102620275/194408684-d172a318-bed4-40a7-aa18-d76a3159576b.png)
